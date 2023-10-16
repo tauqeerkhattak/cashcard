@@ -22,7 +22,7 @@ class CashcardApplicationTests {
 
 	@Test
 	public void testGetCashCard() throws IOException {
-		Long id = 12304L;
+		Long id = 99L;
 		ResponseEntity<CashCard> response = testRestTemplate.getForEntity("/api/cashcard/" + id, CashCard.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		CashCard card = response.getBody();
@@ -31,6 +31,15 @@ class CashcardApplicationTests {
 		assertThat(card.id()).isEqualTo(id);
 		assertThat(card.amount()).isNotNull();
 		assertThat(card.amount()).isEqualTo(123.45);
+	}
+
+	@Test
+	public void testNotFoundCashCard() {
+		/// Not Found Case.
+		long id = 6969L;
+		ResponseEntity<CashCard> response = testRestTemplate.getForEntity("/api/cashcard/" + id, CashCard.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.getBody()).isNull();
 	}
 
 }
