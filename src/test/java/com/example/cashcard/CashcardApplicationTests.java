@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,6 +41,21 @@ class CashcardApplicationTests {
 		ResponseEntity<CashCard> response = testRestTemplate.getForEntity("/api/cashcard/" + id, CashCard.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isNull();
+	}
+
+	@Test
+	public void shouldAddNewCashCard() {
+		CashCard card = new CashCard(null, 500.0);
+		ResponseEntity<Void> response = testRestTemplate.postForEntity("/api/cashcard/", card, Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+		URI locationNewCard = response.getHeaders().getLocation();
+		ResponseEntity<CashCard> getResponse = testRestTemplate.getForEntity(locationNewCard, CashCard.class);
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		CashCard getCard = getResponse.getBody();
+		assertThat(getCard).isNotNull();
+		assertThat(getCard.amount()).isEqualTo(card.amount());
+
 	}
 
 }
